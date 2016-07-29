@@ -60,6 +60,7 @@ def process_mentions(instance, created, field, **kwargs):
 
     m2mfields = dict((f.rel.to, f) for f in instance._meta.many_to_many
                      if f.name in field.links)
+    seen = set()
     for provider_name, objs in get_mentions(text).items():
         try:
             get_extra_mentions = getattr(instance, 'get_%s_mentions' % provider_name)
@@ -71,7 +72,13 @@ def process_mentions(instance, created, field, **kwargs):
         model = providers.for_name(provider_name).model
         if model in m2mfields:
             setattr(instance, m2mfields[model].name, objs)
+            seen.add(model)
         objects_mentioned.send(mentions=objs, instance=instance, created=created, sender=model)
+
+    # cleanup not seen fields as it means no mentions for this relation
+    not_seen = set(m2mfields.keys()).difference(seen)
+    for model in not_seen:
+        setattr(instance, m2mfields[model].name, [])
 
 
 if 'south' in settings.INSTALLED_APPS:
