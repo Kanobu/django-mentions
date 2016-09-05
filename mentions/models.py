@@ -76,6 +76,8 @@ def process_mentions(instance, created, field, **kwargs):
         objects_mentioned.send(mentions=objs, instance=instance, created=created, sender=model)
 
     # cleanup not seen fields as it means no mentions for this relation
+    # FIXME only one MentionTextField per model allowed as multiple fields
+    # will break this trick (see #851 at github.com/kanobu/kanobu)
     not_seen = set(m2mfields.keys()).difference(seen)
     for model in not_seen:
         setattr(instance, m2mfields[model].name, [])
