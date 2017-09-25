@@ -1,7 +1,6 @@
 import json
 import unittest
 from django.test import TestCase
-from django.db import models
 from django import forms
 from django.core.urlresolvers import reverse
 from django.template import Template, Context
@@ -15,25 +14,13 @@ except ImportError:
     jinja_support = False
 else:
     jinja_support = True
-    from .helpers import urlize_mentions
+    from mentions.helpers import urlize_mentions
 
-from .models import MentionTextField
-from .registry import Provider, ProviderRegistry
-from .utils import make_mention
-from .forms import MentionTextarea
+from mentions.registry import Provider, ProviderRegistry
+from mentions.utils import make_mention
+from mentions.forms import MentionTextarea
 
-
-class User(models.Model):
-    name = models.CharField(max_length=30)
-
-    def get_absolute_url(self):
-        return '/users/%d/' % self.pk
-
-
-class Post(models.Model):
-    text = MentionTextField(links=['users'])
-
-    users = models.ManyToManyField(User)
+from .models import User, Post
 
 
 class UserProvider(Provider):
@@ -44,7 +31,6 @@ class UserProvider(Provider):
 
     def search(self, request, term):
         return self.get_queryset().filter(name__istartswith=term)
-
 
 providers = ProviderRegistry()
 providers.register(UserProvider)
