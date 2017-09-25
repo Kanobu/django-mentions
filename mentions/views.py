@@ -29,4 +29,4 @@ def autocomplete(request):
                     'uid': '%s:%s' % (provider.name, obj.pk),
                 })
 
-    return HttpResponse(json.dumps(ret), mimetype='application/json')
+    return HttpResponse(json.dumps(ret), content_type='application/json')
