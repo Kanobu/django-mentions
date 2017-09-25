@@ -1,23 +1,14 @@
+import os
 import sys
+
+import django
 from django.conf import settings
+from django.test.utils import get_runner
 
-settings.configure(
-    DEBUG=True,
-    DATABASES={
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ':memory:'
-        }
-    },
-    ROOT_URLCONF='mentions.urls',
-    INSTALLED_APPS=('mentions',)
-)
-
-from django.test.simple import DjangoTestSuiteRunner
-
-
-test_runner = DjangoTestSuiteRunner(verbosity=1)
-failures = test_runner.run_tests(['mentions', ])
-
-if failures:
-    sys.exit(failures)
+if __name__ == "__main__":
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
+    django.setup()
+    TestRunner = get_runner(settings)
+    test_runner = TestRunner()
+    failures = test_runner.run_tests(["tests"])
+    sys.exit(bool(failures))
