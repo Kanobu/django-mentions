@@ -36,7 +36,7 @@ def make_mention(obj):
 
 
 def get_mentions(text):
-    mentions = [(type_, pk) for raw, type_, pk in MENTION_PATTERN.findall(unicode(text))]
+    mentions = [(type_, pk) for raw, type_, pk in MENTION_PATTERN.findall(str(text))]
 
     by_type = {}
     for type_, pk in mentions:
